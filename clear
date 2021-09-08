@@ -1,0 +1,66 @@
+warning: LF will be replaced by CRLF in src/main/java/com/SmartContactManager/controller/UserController.java.
+The file will have its original line endings in your working directory
+[1mdiff --git a/src/main/java/com/SmartContactManager/Dao/ContactRepository.java b/src/main/java/com/SmartContactManager/Dao/ContactRepository.java[m
+[1mindex 03442a1..19e0639 100644[m
+[1m--- a/src/main/java/com/SmartContactManager/Dao/ContactRepository.java[m
+[1m+++ b/src/main/java/com/SmartContactManager/Dao/ContactRepository.java[m
+[36m@@ -1,7 +1,9 @@[m
+ package com.SmartContactManager.Dao;[m
+ [m
+[31m-import java.util.List;[m
+ [m
+[32m+[m
+[32m+[m[32mimport org.springframework.data.domain.Page;[m
+[32m+[m[32mimport org.springframework.data.domain.Pageable;[m
+ import org.springframework.data.jpa.repository.JpaRepository;[m
+ import org.springframework.data.jpa.repository.Query;[m
+ [m
+[36m@@ -9,6 +11,6 @@[m [mimport com.SmartContactManager.model.Contact;[m
+ [m
+ public interface ContactRepository extends JpaRepository<Contact, Integer> {[m
+ 	@Query("from Contact as c where c.user.id =:userId")[m
+[31m-	public List<Contact> findContactByUser(int userId);[m
+[32m+[m	[32mpublic Page<Contact> findContactByUser(int userId,Pageable pageable);[m
+ [m
+ }[m
+[1mdiff --git a/src/main/java/com/SmartContactManager/controller/UserController.java b/src/main/java/com/SmartContactManager/controller/UserController.java[m
+[1mindex 7fd3d06..791f88b 100644[m
+[1m--- a/src/main/java/com/SmartContactManager/controller/UserController.java[m
+[1m+++ b/src/main/java/com/SmartContactManager/controller/UserController.java[m
+[36m@@ -12,10 +12,14 @@[m [mimport javax.servlet.http.HttpSession;[m
+ [m
+ import org.springframework.beans.factory.annotation.Autowired;[m
+ import org.springframework.core.io.ClassPathResource;[m
+[32m+[m[32mimport org.springframework.data.domain.Page;[m
+[32m+[m[32mimport org.springframework.data.domain.PageRequest;[m
+[32m+[m[32mimport org.springframework.data.domain.Pageable;[m
+ import org.springframework.stereotype.Controller;[m
+ import org.springframework.ui.Model;[m
+ import org.springframework.web.bind.annotation.GetMapping;[m
+ import org.springframework.web.bind.annotation.ModelAttribute;[m
+[32m+[m[32mimport org.springframework.web.bind.annotation.PathVariable;[m
+ import org.springframework.web.bind.annotation.PostMapping;[m
+ import org.springframework.web.bind.annotation.RequestMapping;[m
+ import org.springframework.web.bind.annotation.RequestParam;[m
+[36m@@ -95,14 +99,18 @@[m [mpublic class UserController {[m
+ 		return "Standard/addContactForm";[m
+ 	}[m
+ 	[m
+[31m-	@GetMapping("/viewContacts")[m
+[31m-	public String viewContacts(Model m,Principal principal)[m
+[32m+[m	[32m@GetMapping("/viewContacts/{page}")[m
+[32m+[m	[32mpublic String viewContacts(@PathVariable("page") Integer page,Model m,Principal principal)[m
+ 	{[m
+ 		String userName = principal.getName();[m
+ 		User user = this.userRepository.findByUserName(userName);[m
+ 		[m
+[31m-		List<Contact> contacts = this.contactRepository.findContactByUser(user.getId());[m
+[32m+[m[41m		[m
+[32m+[m		[32mPageable pageable = PageRequest.of(page, 5);[m
+[32m+[m		[32mPage<Contact> contacts = this.contactRepository.findContactByUser(user.getId(), pageable);[m
+ 		m.addAttribute("contacts", contacts); [m
+[32m+[m		[32mm.addAttribute("currentPage", page);[m
+[32m+[m		[32mm.addAttribute("totalPages",contacts.getTotalPages());[m
+ 		m.addAttribute("title","View Contacts");[m
+ 		return "Standard/viewContacts";[m
+ 	}[m
