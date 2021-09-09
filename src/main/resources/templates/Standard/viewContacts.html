@@ -25,25 +25,43 @@
   <tbody>
     <tr th:each="c: ${contacts}">
       <th scope="row" th:text="${'SCMUSER'+c.cid}">1</th>
-      <td th:text="${c.name}">Mark</td>
-      <td th:text="${c.email}">Otto</td>
-      <td th:text="${c.phone}">@mdo</td>
-      <td >
-      <button class="btn btn-primary btn-sm">Update</button>
-       <button class="btn btn-danger btn-sm">Delete</button>
       
+      <td> <img src="" class="pictures" th:src="@{'/images/'+ ${c.image}}" alt="profilePhoto" /> </td>
+      
+      <span th:text="${c.name}">Kandy ></span></td>
+      
+      <td >
+	      <a href="#" th:href="@{'/user/contact/'+ ${c.cid}}" >
+	      <span th:text="${c.email}">kandy@gmail.com ></span>
+	      </a>
       </td>
+      
+      <td th:text="${c.phone}">0123456789</td>
+    
+     <td >   
+      <button class="btn btn-primary btn-sm">Update</button>&nbsp;
+      <button  class="btn btn-info btn-sm" >View</button>&nbsp;
+       <button class="btn btn-danger btn-sm">Delete</button>
+      </td>
+      
     </tr>
    
   </tbody>
 </table>
 		<nav aria-label="Page navigation example">
   <ul class="pagination">
-    <li class="page-item"><a class="page-link" href="#">Previous</a></li>
-    <li class="page-item"><a class="page-link" href="#">1</a></li>
-    <li class="page-item"><a class="page-link" href="#">2</a></li>
-    <li class="page-item"><a class="page-link" href="#">3</a></li>
-    <li class="page-item"><a class="page-link" href="#">Next</a></li>
+  
+			<!-- Previous -->
+    <li  th:if="${currentPage != 0}"   class="page-item"><a  th:href="@{'/user/viewContacts/' +${currentPage-1 } }" class="page-link" href="#">Previous</a></li>
+    
+		<!-- currentPage -->
+    <li th:classappend="${currentPage == i-1 ?'active':''}"    th:each="i : ${#numbers.sequence(1,totalPages)}" class="page-item">
+    				<a th:href="@{'/user/viewContacts/' +${i-1 } }" class="page-link" href="#">
+   															 <span th:text="${i}"></span></a></li>
+    
+   
+		<!-- 	Next -->
+    <li  th:if="${currentPage+1 != totalPages}"  class="page-item"><a th:href="@{'/user/viewContacts/' +${currentPage + 1 } }" class="page-link" href="#">Next</a></li>
   </ul>
 </nav>
 		</div>

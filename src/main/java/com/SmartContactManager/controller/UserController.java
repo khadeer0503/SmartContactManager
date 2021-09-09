@@ -80,11 +80,21 @@ public class UserController {
 		{
 			//throw new Exception("File is Empty");
 			System.out.println("File is Empty");
+			//to set the image default if image is NULL in view contact from
+			contact.setImage("contact.png");
 		}else {
 			contact.setImage(file.getOriginalFilename()); 
+			
 			//save the file in path then upload
 			File saveFile = new ClassPathResource("static/images").getFile();
+			
+			//in path we have reached till images using (saveFile) + getting the file with name 
 			Path path = Paths.get(saveFile.getAbsolutePath()+File.separator+file.getOriginalFilename());
+			
+			//Copies all bytes from an input stream to a file. On return, the inputstream will be at end of stream
+			//By default, the copy fails if the target file already exists or is asymbolic link.
+			//If the REPLACE_EXISTING option is specified, and the target file already exists,then it is replaced if it is not a non-empty directory
+			
 			Files.copy(file.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
 		}
 		user.getContact().add(contact);
@@ -104,15 +114,27 @@ public class UserController {
 	{
 		String userName = principal.getName();
 		User user = this.userRepository.findByUserName(userName);
+		//currentPage - page
+		//contact per page - 3
+		//setting the limit to the page is 3
+		Pageable pageable = PageRequest.of(page, 3);
 		
-		
-		Pageable pageable = PageRequest.of(page, 5);
 		Page<Contact> contacts = this.contactRepository.findContactByUser(user.getId(), pageable);
 		m.addAttribute("contacts", contacts); 
+		
 		m.addAttribute("currentPage", page);
 		m.addAttribute("totalPages",contacts.getTotalPages());
+		
 		m.addAttribute("title","View Contacts");
 		return "Standard/viewContacts";
+	}
+	
+	
+	//to show the particular contact
+	@RequestMapping("/contact/{cid}")
+	public String particularContact(@PathVariable("cid") Integer cid)
+	{
+		 return "Standard/particularContact";
 	}
 	
 	
