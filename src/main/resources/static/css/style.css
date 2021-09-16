@@ -106,8 +106,24 @@ cursor: pointer;
 	object-fit:cover;
 	border-radius: 50%;
 	border:1px solid black;
+	
 }
 
+
+/* .search-container { */
+/* 	position: relative; */
+/* } */
+
+
+/* .search-result { */
+/* 		position: absolute; */
+/* 		width:100%; */
+/* 		padding:10px; */
+/* 		border:1px solid gray; */
+/* 		display:none; */
+/* 		background: white; */
+		
+/* } */
 
 
 

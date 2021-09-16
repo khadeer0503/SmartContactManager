@@ -24,23 +24,31 @@ public class User {
 	private int id;
 	@NotEmpty
 	@NotBlank(message="should not be Blank")
+	
 	private String name;
 	@NotBlank
 	@NotEmpty
+	
 	private String email;
 	@NotBlank
 	//@Min(3)@Max(10)
 	@NotBlank(message="should not be Blank")
 	//@NotBlank(message="must be greater and 3 less than 10")
+	
 	private String password;
+	
 	private String image;
 	@NotBlank
+	
 	private String about;
+	
 	private String role;
+	
 	private boolean enabled;
 	
-	@OneToMany(cascade = CascadeType.ALL,fetch = FetchType.LAZY,mappedBy = "user")
+	@OneToMany(cascade = CascadeType.ALL,orphanRemoval = true, fetch = FetchType.LAZY,mappedBy = "user")
 	private List<Contact> contact=new ArrayList<>();
+	private int cid;
 
 	public User() {
 		super();
@@ -137,6 +145,12 @@ public class User {
 	public String toString() {
 		return "User [id=" + id + ", name=" + name + ", email=" + email + ", password=" + password + ", image=" + image
 				+ ", about=" + about + ", role=" + role + ", enabled=" + enabled + ", contact=" + contact + "]";
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		
+		return this.cid==((Contact)obj).getCid();
 	}
 	
 

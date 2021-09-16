@@ -7,6 +7,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.security.Principal;
 import java.util.List;
+import java.util.Optional;
 
 import javax.servlet.http.HttpSession;
 
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
@@ -131,11 +133,113 @@ public class UserController {
 	
 	
 	//to show the particular contact
-	@RequestMapping("/contact/{cid}")
-	public String particularContact(@PathVariable("cid") Integer cid)
+	@RequestMapping("/{cid}/contact")
+	public String particularContact(@PathVariable("cid") Integer cid,Model m,Principal principal)
 	{
+		
+		Optional<Contact> findById = this.contactRepository.findById(cid);
+		Contact Particularcontact = findById.get();
+
+		String userName = principal.getName();
+		User user = this.userRepository.findByUserName(userName);
+
+		
+		// security bug removing
+		if(user.getId() == Particularcontact.getUser().getId()) {
+			m.addAttribute("contact",Particularcontact);
+			m.addAttribute("title",Particularcontact.getName());
+		}
+	
 		 return "Standard/particularContact";
 	}
 	
+	//deleting
 	
+	@GetMapping("/delete/{cid}")
+	public String delete(@PathVariable("cid") Integer cid, Model m,HttpSession session,Principal principal)
+	{
+		Optional<Contact> findById = this.contactRepository.findById(cid);
+		Contact contact = findById.get();
+		
+//		contact.setUser(null);
+//		this.contactRepository.delete(contact); 
+		
+		User user = this.userRepository.findByUserName(principal.getName());
+	user.getContact().remove(contact);
+		
+		this.userRepository.save(user);
+		
+		session.setAttribute("message",new Message("You successfully deleted the contact","success") );
+		
+		return "redirect:/user/viewContacts/0";
+	}
+	
+	//update
+	
+	@PostMapping("/updateForm/{cid}")
+	public String updateForm(@PathVariable("cid") Integer cid ,Model m)
+	{
+		m.addAttribute("title","Update User");
+		Contact contact = this.contactRepository.findById(cid).get();
+		m.addAttribute("contact",contact);
+		return "Standard/updateForm";
+	}
+	
+	
+	// update Process handler
+	 @PostMapping("/updateFormProcess")
+	public String updateFormProcess(@ModelAttribute Contact contact,@RequestParam("profileImage")MultipartFile file,Model m,
+			HttpSession session,Principal principal)
+	{
+		try {
+			//old contact details  
+			Contact oldcontact = this.contactRepository.findById(contact.getCid()).get();
+			
+			//image
+		if( ! file.isEmpty() )	{
+			//rewrite the file
+			
+			
+			//delete old images
+			File deleteFile = new ClassPathResource("static/images").getFile();
+			File file1= new File(deleteFile, oldcontact.getImage());
+			file1.delete();
+			
+			//update new images
+			File saveFile = new ClassPathResource("static/images").getFile();
+			Path path = Paths.get(saveFile.getAbsolutePath()+File.separator+file.getOriginalFilename());
+			Files.copy(file.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
+			
+			contact.setImage(file.getOriginalFilename());
+			
+		}else {
+			contact.setImage(oldcontact.getImage());
+		}
+		
+		User user = this.userRepository.findByUserName(principal.getName());
+		contact.setUser(user);
+		this.contactRepository.save(contact);
+			
+		session.setAttribute("message",new Message("Contact is Updated","success"));
+		
+		}catch (Exception e){
+			e.printStackTrace();
+		}
+		return "redirect:/user/"+contact.getCid()+"/contact";
+	}
+	 
+	 //your Profile
+	 @GetMapping("/profile")
+	 public String profile(Model m)
+	 {
+		 m.addAttribute("title","User Profile");
+		 return "Standard/profile";
+	 }
+	 
+	 
+	 
+	 
+	 
+	 
+	 
 }

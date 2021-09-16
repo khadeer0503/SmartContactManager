@@ -11,7 +11,18 @@
 		
 		<div class="card-body">
 		<h1 class="text-center"> Your Contacts</h1>
+
+<!-- 		search -->
 		
+<!-- 		<div class="search-container my-4"> -->
+<!-- 		<input onkeyup="search()" type="text " class="  form-control" placeholder=" Search your Contacts"  id="search-input" /> -->
+		
+<!-- 		<div class="search-result"> -->
+		
+<!-- 		<h2>This is search result</h2> -->
+		
+<!-- 		</div> -->
+<!-- 		</div> -->
 		<table class="table">
   <thead>
     <tr>
@@ -26,22 +37,29 @@
     <tr th:each="c: ${contacts}">
       <th scope="row" th:text="${'SCMUSER'+c.cid}">1</th>
       
-      <td> <img src="" class="pictures" th:src="@{'/images/'+ ${c.image}}" alt="profilePhoto" /> </td>
-      
-      <span th:text="${c.name}">Kandy ></span></td>
-      
+      					<td> <img src="" class="pictures" th:src="@{'/images/'+ ${c.image}}" alt="profilePhoto" /> </td>
+     					 <span th:text="${c.name}">Kandy ></span>
+     					 </td>
       <td >
-	      <a href="#" th:href="@{'/user/contact/'+ ${c.cid}}" >
+	      <a href="#" th:href="@{'/user/'+${c.cid}+'/contact'}" >
 	      <span th:text="${c.email}">kandy@gmail.com ></span>
 	      </a>
       </td>
       
       <td th:text="${c.phone}">0123456789</td>
     
-     <td >   
-      <button class="btn btn-primary btn-sm">Update</button>&nbsp;
-      <button  class="btn btn-info btn-sm" >View</button>&nbsp;
-       <button class="btn btn-danger btn-sm">Delete</button>
+     <td > 
+     <form  method="post" th:action="@{'/user/updateForm/'+${c.cid}}"  class="md-2" > 
+    		 <button type="submit" class="btn btn-primary btn-sm">UPDATE</button>
+     </form>  
+     
+     
+<!--       <button  class="btn btn-info btn-sm" >View</button>&nbsp; -->
+      
+<!--       th:onclick="|deleteContact(${c.cid})|" -->
+<!-- th:href="@{'/user/delete/'+${c.cid}}" -->
+      
+       <a href="#"   th:onclick="|deleteContact(${c.cid})|" class="btn btn-danger   mt-2  btn-sm" > DELETE</a>
       </td>
       
     </tr>

@@ -1,15 +1,80 @@
 <!doctype html>
-<html lang="en"  xmlns:th="http://www.thymeleaf.org" th:replace="Standard/base::layout(~{::section})">
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+	th:replace="Standard/base::layout(~{::section})">
 <head>
-	<meta charset="UTF-8" />
-	<title>About</title>
+<meta charset="UTF-8" />
+<title>About</title>
 </head>
 <body>
 	<section>
 
-		<div>
-		<h1> this is all particular userContact page</h1>
+		<div class="card m-3">
+			<div class="card-body"  th:if=${contact}>
+				<div class="container text-center">
+
+					<img src="" style="height: 200px; width: 200px;" class="pictures"
+						th:src="@{'/images/'+ ${contact.image}}" alt="profilePhoto" />
+					<h3 class="mt-2">
+						<span th:text="${contact.name}"></span> ( <span
+							th:text="${contact.nickName}"></span> )
+					</h3>
+
+
+					<table class="table">
+						<thead>
+							<tr>
+								<th scope="col">#ID</th>
+								<th scope="col">SCMUSER<span th:text="${contact.cid}"></span></th>
+								
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<th scope="row">Email</th>
+								<td><span th:text="${contact.email}"></span></td>
+							
+							</tr>
+							<tr>
+								<th scope="row">Phone</th>
+								<td><span th:text="${contact.phone}"></span></td>
+								
+							</tr>
+							<tr>
+								<th scope="row">Work</th>
+								<td><span th:text="${contact.work}"></span></td>
+								
+							</tr>
+
+						</tbody>
+						
+						
+						
+					</table>
+
+
+							<div class="description">
+								<th:block th:utext="${contact.description}"></th:block>
+							</div>
+
+					<div class="container m-2">
+					
+					<!-- 	<button class="btn btn-primary" type="button">Update</button> -->
+						  <form  method="post" th:action="@{'/user/updateForm/'+${contact.cid}}"  class="md-2" > 
+						  
+					     <button class="btn col-6 mx-auto btn-primary btn-sm "  type="submit" >Update</button>
+					     
+					     </form> 
+						
+					 <button th:onclick="|deleteContact(${contact.cid})|" class="btn col-6 mx-auto  btn-danger btn-sm mt-2 " >Delete</button>
+					</div>
+
+
+				</div>
+			</div>
+	 
 		</div>
+
+			 <h1 class="text-center p-3  m-3 bg-danger text-white" th:unless="${contact}">You don't have permission to access this contact. </h1>
 
 	</section>
 
